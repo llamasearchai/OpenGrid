@@ -15,7 +15,7 @@ logger = structlog.get_logger(__name__)
 class ComponentBase:
     """Base class for all power system components."""
     name: str
-    component_type: str
+    component_type: str = ""
     properties: Dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.now)
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -50,9 +50,9 @@ class Bus(ComponentBase):
 @dataclass
 class Line(ComponentBase):
     """Line component for power systems."""
-    from_bus: int
-    to_bus: int
-    length_km: float
+    from_bus: int = 0
+    to_bus: int = 0
+    length_km: float = 0.0
     std_type: str = "NAYY 4x50 SE"
     max_i_ka: Optional[float] = None
     r_ohm_per_km: Optional[float] = None
@@ -76,8 +76,8 @@ class Line(ComponentBase):
 @dataclass
 class Transformer(ComponentBase):
     """Transformer component for power systems."""
-    hv_bus: int
-    lv_bus: int
+    hv_bus: int = 0
+    lv_bus: int = 0
     std_type: str = "0.25 MVA 20/0.4 kV"
     sn_mva: Optional[float] = None
     vn_hv_kv: Optional[float] = None
@@ -106,8 +106,8 @@ class Transformer(ComponentBase):
 @dataclass
 class Load(ComponentBase):
     """Load component for power systems."""
-    bus: int
-    p_mw: float
+    bus: int = 0
+    p_mw: float = 0.0
     q_mvar: float = 0.0
     const_z_percent: float = 0.0
     const_i_percent: float = 0.0
@@ -134,8 +134,8 @@ class Load(ComponentBase):
 @dataclass
 class Generator(ComponentBase):
     """Generator component for power systems."""
-    bus: int
-    p_mw: float
+    bus: int = 0
+    p_mw: float = 0.0
     vm_pu: float = 1.0
     sn_mva: Optional[float] = None
     min_q_mvar: Optional[float] = None
@@ -172,8 +172,8 @@ class Generator(ComponentBase):
 @dataclass 
 class Switch(ComponentBase):
     """Switch component for power systems."""
-    bus: int
-    element: int
+    bus: int = 0
+    element: int = 0
     et: str = "b"  # element type: 'b' for bus, 'l' for line
     closed: bool = True
     switch_type: str = "CB"  # Circuit Breaker
@@ -194,7 +194,7 @@ class Switch(ComponentBase):
 @dataclass
 class Storage(ComponentBase):
     """Storage component for power systems."""
-    bus: int
+    bus: int = 0
     p_mw: float = 0.0
     max_e_mwh: float = 1.0
     soc_percent: float = 50.0

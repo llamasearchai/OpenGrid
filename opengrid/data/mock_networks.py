@@ -88,9 +88,21 @@ class MockNetworkGenerator:
         pp.create_gen(net, bus_indices[2], p_mw=85.0, vm_pu=1.025, name="Gen 3")
         
         # Transformers
-        pp.create_transformer(net, bus_indices[0], bus_indices[3], std_type="25 MVA 16.5/230 kV", name="T1")
-        pp.create_transformer(net, bus_indices[1], bus_indices[6], std_type="25 MVA 18/230 kV", name="T2")
-        pp.create_transformer(net, bus_indices[2], bus_indices[8], std_type="25 MVA 13.8/230 kV", name="T3")
+        pp.create_transformer_from_parameters(
+            net, bus_indices[0], bus_indices[3], 
+            sn_mva=25, vn_hv_kv=230, vn_lv_kv=16.5, vkr_percent=0.5, vk_percent=8.0,
+            pfe_kw=0, i0_percent=0, name="T1"
+        )
+        pp.create_transformer_from_parameters(
+            net, bus_indices[1], bus_indices[6], 
+            sn_mva=25, vn_hv_kv=230, vn_lv_kv=18, vkr_percent=0.5, vk_percent=8.0,
+            pfe_kw=0, i0_percent=0, name="T2"
+        )
+        pp.create_transformer_from_parameters(
+            net, bus_indices[2], bus_indices[8], 
+            sn_mva=25, vn_hv_kv=230, vn_lv_kv=13.8, vkr_percent=0.5, vk_percent=8.0,
+            pfe_kw=0, i0_percent=0, name="T3"
+        )
         
         # Lines
         line_data = [
@@ -204,7 +216,11 @@ class MockNetworkGenerator:
         battery_bus = pp.create_bus(net, vn_kv=0.4, name="Battery Bus")
         
         # Transformer
-        pp.create_transformer(net, slack_bus, pcc_bus, std_type="0.25 MVA 10/0.4 kV", name="Main Transformer")
+        pp.create_transformer_from_parameters(
+            net, slack_bus, pcc_bus, 
+            sn_mva=0.25, vn_hv_kv=11.0, vn_lv_kv=0.4, vkr_percent=1.2, vk_percent=4.0,
+            pfe_kw=2.7, i0_percent=0.9, name="Main Transformer"
+        )
         
         # Distribution lines
         pp.create_line_from_parameters(net, pcc_bus, solar_bus, length_km=0.2, 
@@ -266,10 +282,26 @@ class MockNetworkGenerator:
         gen_bus = pp.create_bus(net, vn_kv=13.8, name="Generator Bus")
         
         # Transformers
-        pp.create_transformer(net, utility_bus, main_bus, std_type="25 MVA 138/13.8 kV", name="Main Transformer")
-        pp.create_transformer(net, main_bus, motor_bus1, std_type="5 MVA 13.8/4.16 kV", name="Motor Transformer 1")
-        pp.create_transformer(net, main_bus, motor_bus2, std_type="5 MVA 13.8/4.16 kV", name="Motor Transformer 2")
-        pp.create_transformer(net, main_bus, aux_bus, std_type="1 MVA 13.8/0.48 kV", name="Auxiliary Transformer")
+        pp.create_transformer_from_parameters(
+            net, utility_bus, main_bus, 
+            sn_mva=25, vn_hv_kv=138, vn_lv_kv=13.8, vkr_percent=0.5, vk_percent=8.0,
+            pfe_kw=0, i0_percent=0, name="Main Transformer"
+        )
+        pp.create_transformer_from_parameters(
+            net, main_bus, motor_bus1, 
+            sn_mva=5, vn_hv_kv=13.8, vn_lv_kv=4.16, vkr_percent=0.5, vk_percent=8.0,
+            pfe_kw=0, i0_percent=0, name="Motor Transformer 1"
+        )
+        pp.create_transformer_from_parameters(
+            net, main_bus, motor_bus2, 
+            sn_mva=5, vn_hv_kv=13.8, vn_lv_kv=4.16, vkr_percent=0.5, vk_percent=8.0,
+            pfe_kw=0, i0_percent=0, name="Motor Transformer 2"
+        )
+        pp.create_transformer_from_parameters(
+            net, main_bus, aux_bus, 
+            sn_mva=1, vn_hv_kv=13.8, vn_lv_kv=0.48, vkr_percent=0.5, vk_percent=8.0,
+            pfe_kw=0, i0_percent=0, name="Auxiliary Transformer"
+        )
         
         # Emergency generator
         pp.create_gen(net, gen_bus, p_mw=2.0, vm_pu=1.0, name="Emergency Generator")
@@ -312,7 +344,11 @@ class MockNetworkGenerator:
         substation_hv = pp.create_bus(net, vn_kv=69.0, name="Substation HV")
         substation_lv = pp.create_bus(net, vn_kv=12.47, name="Substation LV")
         pp.create_ext_grid(net, substation_hv, vm_pu=1.0, name="Transmission System")
-        pp.create_transformer(net, substation_hv, substation_lv, std_type="25 MVA 69/12.47 kV", name="Substation Transformer")
+        pp.create_transformer_from_parameters(
+            net, substation_hv, substation_lv, 
+            sn_mva=25, vn_hv_kv=69, vn_lv_kv=12.47, vkr_percent=0.5, vk_percent=8.0,
+            pfe_kw=0, i0_percent=0, name="Substation Transformer"
+        )
         
         # Main feeder
         buses = [substation_lv]
@@ -381,11 +417,23 @@ class MockNetworkGenerator:
         load_center_bus = pp.create_bus(net, vn_kv=138.0, name="Load Center Bus")
         
         # Step-up transformers
-        pp.create_transformer(net, grid_bus, load_center_bus, std_type="100 MVA 230/138 kV", name="Grid Transformer")
+        pp.create_transformer_from_parameters(
+            net, grid_bus, load_center_bus, 
+            sn_mva=100, vn_hv_kv=230, vn_lv_kv=138, vkr_percent=0.5, vk_percent=8.0,
+            pfe_kw=0, i0_percent=0, name="Grid Transformer"
+        )
         wind_tx_bus = pp.create_bus(net, vn_kv=230.0, name="Wind TX Bus")
         solar_tx_bus = pp.create_bus(net, vn_kv=230.0, name="Solar TX Bus")
-        pp.create_transformer(net, wind_tx_bus, wind_farm_bus, std_type="50 MVA 230/34.5 kV", name="Wind Transformer")
-        pp.create_transformer(net, solar_tx_bus, solar_farm_bus, std_type="50 MVA 230/34.5 kV", name="Solar Transformer")
+        pp.create_transformer_from_parameters(
+            net, wind_tx_bus, wind_farm_bus, 
+            sn_mva=50, vn_hv_kv=230, vn_lv_kv=34.5, vkr_percent=0.5, vk_percent=8.0,
+            pfe_kw=0, i0_percent=0, name="Wind Transformer"
+        )
+        pp.create_transformer_from_parameters(
+            net, solar_tx_bus, solar_farm_bus, 
+            sn_mva=50, vn_hv_kv=230, vn_lv_kv=34.5, vkr_percent=0.5, vk_percent=8.0,
+            pfe_kw=0, i0_percent=0, name="Solar Transformer"
+        )
         
         # Transmission lines
         pp.create_line_from_parameters(net, grid_bus, wind_tx_bus, length_km=50.0,
@@ -406,7 +454,11 @@ class MockNetworkGenerator:
         
         # Energy storage
         storage_bus = pp.create_bus(net, vn_kv=34.5, name="Storage Bus")
-        pp.create_transformer(net, load_center_bus, storage_bus, std_type="25 MVA 138/34.5 kV", name="Storage Transformer")
+        pp.create_transformer_from_parameters(
+            net, load_center_bus, storage_bus, 
+            sn_mva=25, vn_hv_kv=138, vn_lv_kv=34.5, vkr_percent=0.5, vk_percent=8.0,
+            pfe_kw=0, i0_percent=0, name="Storage Transformer"
+        )
         pp.create_storage(net, storage_bus, p_mw=20.0, max_e_mwh=80.0, name="Grid Storage")
         
         metadata = NetworkMetadata(

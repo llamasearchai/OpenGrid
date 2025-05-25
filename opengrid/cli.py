@@ -390,21 +390,26 @@ class OpenGridCLI:
 
     def list_case_studies(self, analysis_type: Optional[str] = None, difficulty: Optional[str] = None):
         """List available case studies"""
-        cases = sample_cases.list_cases(analysis_type=analysis_type, difficulty=difficulty)
+        case_ids = sample_cases.list_cases(analysis_type=analysis_type, difficulty=difficulty)
         
         print(f"\nAvailable Case Studies:")
         print("-" * 60)
-        for case in cases:
-            print(f"ID: {case.case_id}")
-            print(f"Name: {case.name}")
-            print(f"Type: {case.analysis_type}")
-            print(f"Network: {case.network_name}")
-            print(f"Difficulty: {case.difficulty}")
-            print(f"Runtime: {case.estimated_runtime_seconds:.1f}s")
-            print(f"Description: {case.description}")
-            if case.learning_objectives:
-                print(f"Objectives: {', '.join(case.learning_objectives[:2])}")
-            print("-" * 40)
+        for case_id in case_ids:
+            try:
+                case = sample_cases.get_case(case_id)
+                print(f"ID: {case.case_id}")
+                print(f"Name: {case.name}")
+                print(f"Type: {case.analysis_type}")
+                print(f"Network: {case.network_name}")
+                print(f"Difficulty: {case.difficulty}")
+                print(f"Runtime: {case.estimated_runtime_seconds:.1f}s")
+                print(f"Description: {case.description}")
+                if hasattr(case, 'tags') and case.tags:
+                    print(f"Tags: {', '.join(case.tags[:3])}")
+                print("-" * 40)
+            except Exception as e:
+                print(f"[WARNING] Could not load case {case_id}: {e}")
+                continue
 
     def export_results(self, result_id: str, filepath: str, format_type: str = "json"):
         """Export analysis results to file"""
