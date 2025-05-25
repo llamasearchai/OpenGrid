@@ -1,0 +1,107 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "OpenGrid"
+version = "0.2.0"
+description = "OpenGrid: AI-Powered Power Systems Analysis and Design Platform"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Nik Jois", email = "nikjois@llamasearch.ai"}
+]
+keywords = ["power-systems", "electrical-engineering", "ai", "simulation", "grid-analysis"]
+classifiers = [
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: C++",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "pypsa==0.21.3",
+    "pandapower==2.13.1",
+    "numba==0.57.1",
+    "structlog==23.1.0",
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "openai>=1.3.0",
+    "pydantic>=2.0.0",
+    "numpy>=1.24.0",
+    "pandas>=2.0.0",
+    "matplotlib>=3.7.0",
+    "plotly>=5.17.0",
+    "dash>=2.14.0",
+    "scipy>=1.11.0",
+    "networkx>=3.1",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.12.0",
+    "redis>=5.0.0",
+    "celery>=5.3.0",
+    "httpx>=0.25.0",
+    "jinja2>=3.1.0",
+    "python-multipart>=0.0.6",
+    "aiofiles>=23.2.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+    "ruff>=0.1.0",
+    "mypy>=1.6.0",
+    "sphinx>=7.1.0",
+    "sphinx-rtd-theme>=1.3.0",
+    "pre-commit>=3.5.0",
+    "cmake>=3.27.0",
+    "black>=23.9.0",
+    "isort>=5.12.0",
+]
+
+all = [
+    "PySide6>=6.5.0",
+]
+
+[project.scripts]
+opengrid = "opengrid.cli:cli_entry_point"
+
+[project.urls]
+Homepage = "https://github.com/llamasearchai/OpenGrid"
+Repository = "https://github.com/llamasearchai/OpenGrid"
+Documentation = "https://llamasearchai.github.io/OpenGrid"
+"Bug Tracker" = "https://github.com/llamasearchai/OpenGrid/issues"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "UP", "PL", "PT", "RUF"]
+ignore = ["PLR0913", "PLR0912", "PLR0915"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["PLR2004"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+ignore_missing_imports = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--cov=opengrid --cov-report=html --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["opengrid"]
+omit = ["tests/*", "build/*"] 

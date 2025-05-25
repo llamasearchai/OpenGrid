@@ -1,0 +1,57 @@
+name: OpenGrid Python CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-python:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -e . # Install OpenGrid in editable mode
+        pip install pytest ruff # Install dev dependencies for CI steps
+
+    - name: Lint with Ruff
+      run: |
+        ruff check .
+
+    - name: Test with Pytest
+      run: |
+        pytest
+
+# C++ CI would be a separate job, potentially on different runners or with more setup
+# Example placeholder for C++ job:
+#  test-cpp:
+#    runs-on: ubuntu-latest # Needs Qt, GTest, spdlog installed
+#    steps:
+#    - uses: actions/checkout@v4
+#    - name: Install C++ dependencies
+#      run: |
+#        sudo apt-get update
+#        sudo apt-get install -y qt6-base-dev qt6-qml-dev libspdlog-dev libgtest-dev cmake build-essential
+#        # For GTest, often need to build it from source if libgtest-dev only provides sources
+#        cd /usr/src/googletest && sudo cmake . && sudo make && sudo cp lib/*.a /usr/lib
+#    - name: Configure CMake
+#      run: cmake -B build -S .
+#    - name: Build
+#      run: cmake --build build -- -j2 # Adjust jobs based on runner cores
+#    - name: Test C++
+#      working-directory: ./build
+#      run: ctest -C Debug --output-on-failure 

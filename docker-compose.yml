@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  opengrid:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - RELOAD=true
+      - WORKERS=1
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    volumes:
+      - .:/app
+      - opengrid_data:/app/data/exports
+    command: python main.py
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  opengrid-dev:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - RELOAD=true
+      - WORKERS=1
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - PYTHONPATH=/app
+    volumes:
+      - .:/app
+      - opengrid_dev_data:/app/data/exports
+    command: python main.py
+    depends_on:
+      - redis
+    profiles:
+      - dev
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    profiles:
+      - dev
+      - full
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=opengrid
+      - POSTGRES_USER=opengrid
+      - POSTGRES_PASSWORD=opengrid_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    profiles:
+      - full
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/ssl:ro
+    depends_on:
+      - opengrid
+    profiles:
+      - production
+
+volumes:
+  opengrid_data:
+  opengrid_dev_data:
+  redis_data:
+  postgres_data: 
